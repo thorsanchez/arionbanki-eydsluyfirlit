@@ -103,6 +103,17 @@ def flokka_med_gemini(faerslu_listi):
         print(f"villa i api request: {e}")
         return []
 
+def manadar_utgjold(df):
+    utgjold = df[df['Amount'] < 0].copy()
+    #bæta við mánuður col
+    utgjold['Mánuður'] = utgjold['Date'].dt.to_period('M')
+    #flokka eftir mánuði
+    manadarlega = utgjold.groupby('Mánuður')['Amount'].sum().reset_index()
+    #format
+    manadarlega['Mánuður'] = manadarlega['Mánuður'].astype(str)
+    manadarlega['Amount'] = manadarlega['Amount'].round(0)
+    return manadarlega
+
 
 df = lesa_gogn()
 #print(df.head)
@@ -111,4 +122,6 @@ df = lesa_gogn()
 #print(utgjold_yfirlit(df))
 #print(top5_utgjold(df))
 #print(top_vidtakendur(df,10))
-print(flokka_med_gemini(df))
+#print(flokka_med_gemini(df))
+print("\n Útgjöld eftir mánuðum:")
+print(manadar_utgjold(df))
