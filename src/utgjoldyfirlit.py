@@ -1,10 +1,13 @@
 import pandas as pd
 import json
-from google import genai
-from dotenv import load_dotenv
 import os
+import requests
 
-load_dotenv()
+# sækja ip
+with open('config.json') as f:
+    config = json.load(f)
+    GEMMA_HOST = config["GEMMA_HOST"]
+
 
 def lesa_gogn():
     df = pd.read_excel('data/arionbanki.xlsx', header=3) #skipa fyrstu 2 raðir
@@ -45,7 +48,7 @@ def top_vidtakendur(df,n):
     topN['Fjöldi færslna'] = topN['Explanation'].map(fjarslur_per_vidtakandi)
     return topN
 
-def flokka_med_gemini(faerslu_listi):
+def flokka_med_gemma(faerslu_listi):
     """
     Þar sem "Nafn viðtakanda eða greiðanda" dálkur er messy þá ætlar gemini að categorize-a
     """
@@ -85,22 +88,28 @@ def flokka_med_gemini(faerslu_listi):
     """
     
     try:
-        client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-        
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt,
-            config=genai.types.GenerateContentConfig(
-                response_mime_type='application/json',
-                temperature=0.3
-            )
+        response = requests.post(
+            f"{GEMMA_HOST}/api/generate",
+            json={
+                "model": "gemma2:9b",
+                "prompt": prompt,
+                "stream": False,
+                "format": "json",
+                "options": {
+                    "temperature": 0.3
+                }
+            },
+            timeout=120
         )
-        
-        categories = json.loads(response.text)
-        return categories
-        
+
+        response.raise_for_status()
+
+        result = response.json()
+        categories = json.loads(result["response"])
+        return categories.get("results", categories) if isinstance(categories, dict) else categories
+
     except Exception as e:
-        print(f"villa i api request: {e}")
+        print(f"error í gemma api kall: {e}")
         return []
 
 def manadar_utgjold(df):
@@ -122,6 +131,6 @@ df = lesa_gogn()
 #print(utgjold_yfirlit(df))
 #print(top5_utgjold(df))
 #print(top_vidtakendur(df,10))
-#print(flokka_med_gemini(df))
-print("\n Útgjöld eftir mánuðum:")
-print(manadar_utgjold(df))
+print(flokka_med_gemma(df))
+#print("\n Útgjöld eftir mánuðum:")
+#print(manadar_utgjold(df))
