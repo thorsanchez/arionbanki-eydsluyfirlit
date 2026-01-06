@@ -30,10 +30,20 @@ def top5_utgjold(df):
     top5 = utgjold_raðir.nsmallest(5, 'Amount') #stærstu neikvæðu tölu
     return top5
 
+def top_vidtakendur(df,n):
+    utgjold_radir = df[df['Amount'] < 0].copy()
+    #öll rows með sama explanation í saman og viljum bara amount col
+    grouped = utgjold_radir.groupby('Explanation')['Amount'].sum().reset_index()
+    topN = grouped.nsmallest(n, 'Amount')
+    fjarslur_per_vidtakandi = utgjold_radir['Explanation'].value_counts()
+    topN['Fjöldi færslna'] = topN['Explanation'].map(fjarslur_per_vidtakandi)
+
+    return topN
 
 df = lesa_gogn()
 #print(df.head)
 #df = hreinsa_gogn(df)
 #print(df.head())
 #print(utgjold_yfirlit(df))
-print(top5_utgjold(df))
+#print(top5_utgjold(df))
+print(top_vidtakendur(df,10))
