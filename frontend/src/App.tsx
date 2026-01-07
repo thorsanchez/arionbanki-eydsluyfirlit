@@ -2,6 +2,8 @@ import { useState } from "react";
 
 interface UploadedData {
   filename: string;
+  rows?: number
+  columns?: string[]
 }
 
 function App() {
