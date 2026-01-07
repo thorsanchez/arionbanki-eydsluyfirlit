@@ -1,16 +1,16 @@
-import { useState } from 'react'
+import { useState } from "react";
 
 interface UploadedData {
-  filename: string
+  filename: string;
 }
 
 function App() {
-  const [file, setFile] = useState<File | null>(null)
-  const [uploadedData, setUploadedData] = useState<UploadedData | null>(null)
-  const [result, setResult] = useState<string>("")
+  const [file, setFile] = useState<File | null>(null);
+  const [uploadedData, setUploadedData] = useState<UploadedData | null>(null);
+  const [result, setResult] = useState<string>("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0]
+    const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
     }
@@ -44,6 +44,32 @@ function App() {
     }
   };
 
+  const handleUtgjoldYfirlit = async () => {
+    if (!uploadedData) return;
+
+    try {
+      //senda get request til bakenda
+      const response = await fetch(
+        "http://localhost:8000/analysis/utgjold-yfirlit"
+      );
+
+       // athuga hvort það tókst
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+      }
+
+      // parse-a json response
+      const data = await response.json();
+      console.log("Útgjöld yfirlit response:", data);
+
+      //Sýna niðurstöðuna
+      setResult(`Heildarútgjöld: ${data.formatted}`);
+    } catch (error) {
+      console.error("Analysis error:", error);
+      setResult(`Villa við greiningu: ${error}`);
+    }
+  };
+
   const handleAnalysis = (type: string) => {
     if (!uploadedData) return;
     setResult(`${type} - Bakendi API kemur bráðlega`);
@@ -68,10 +94,7 @@ function App() {
 
       <div>
         <h2>Greining</h2>
-        <button
-          onClick={() => handleAnalysis("Útgjöld yfirlit")}
-          disabled={!uploadedData}
-        >
+        <button onClick={handleUtgjoldYfirlit} disabled={!uploadedData}>
           Útgjöld yfirlit
         </button>
         <button
@@ -104,5 +127,5 @@ function App() {
   );
 }
 
-export default App
+export default App;
 
