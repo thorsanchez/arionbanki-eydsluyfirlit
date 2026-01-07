@@ -2,8 +2,8 @@ import { useState } from "react";
 
 interface UploadedData {
   filename: string;
-  rows?: number
-  columns?: string[]
+  rows?: number;
+  columns?: string[];
 }
 
 function App() {
@@ -55,7 +55,7 @@ function App() {
         "http://localhost:8000/analysis/utgjold-yfirlit"
       );
 
-       // athuga hvort það tókst
+      // athuga hvort það tókst
       if (!response.ok) {
         throw new Error(`Request failed: ${response.status}`);
       }
@@ -130,4 +130,3 @@ function App() {
 }
 
 export default App;
-
