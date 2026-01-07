@@ -1,6 +1,6 @@
 import json
 import requests
-from utils.config import GEMMA_HOST
+from ..utils.config import GEMMA_HOST
 
 def flokka_med_gemma(df):
     """
