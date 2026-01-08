@@ -106,3 +106,6 @@ def chat_endpoint(request: ChatRequest):
         }
     except Exception as e:
         raise HTTPException(500, f"Villa í chat: {str(e)}")
+    
+
+

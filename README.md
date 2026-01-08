@@ -6,7 +6,7 @@ Einfaldt web app til að greina bankaútgjöld frá Arion banka.
 
 ## Núverandi staða
 
-![skjamynd](/public/Screenshot%202026-01-08%20at%2016.54.31.png)
+![skjamynd](/public/Screenshot%202026-01-08%20at%2017.59.57.png)
 (er að nota mock data til prófunar)
 
 ## Um verkefnið

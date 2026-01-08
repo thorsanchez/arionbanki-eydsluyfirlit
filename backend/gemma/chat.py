@@ -1,26 +1,59 @@
 import requests
+import pandas as pd
 from ..utils.config import GEMMA_HOST
-from ..analysis.utgjold import utgjold_yfirlit, top5_utgjold, manadar_utgjold
 
 def chat_med_gemma(df, user_question: str):
     """
     senda hvaða spurningu a gemma
     """
-    # sækja data summary
-    total_expenses = utgjold_yfirlit(df)
-    top_expenses = top5_utgjold(df).to_dict('records')
-    monthly_expenses = manadar_utgjold(df).to_dict('records')
-
+    
+    # geyma dataset
+    df_copy = df.copy()
+    df_copy['Date'] = pd.to_datetime(df_copy['Date'])
+    
+    # bara 2025 spurning inniheldur það
+    if '2025' in user_question:
+        df_filtered = df_copy[df_copy['Date'].dt.year == 2025].copy()
+    else:
+        df_filtered = df_copy.copy()
+    
+    # minka tokens bara 3 cols
+    relevant_cols = ['Date', 'Amount', 'Explanation']
+    df_filtered = df_filtered[relevant_cols].copy()
+    
+    df_filtered['Date'] = df_filtered['Date'].dt.strftime('%Y-%m-%d')
+    df_filtered['Amount'] = df_filtered['Amount'].round(0).astype(int)
+    all_transactions = df_filtered.to_dict('records')
+    
+    
     prompt = f"""Þú ert fjármálaráðgjafi sem greinir bankaviðskipti á íslensku.
-    Hér eru öll viðskiptin: {df[['Date', 'Amount', 'Description']].to_json(orient='records', date_format='iso')}
-    Notandi hefur hlaðið upp bankagögnum sínum. Hér er samantekt:
-    - Heildarútgjöld: {total_expenses:.0f} kr
-    - Stærstu útgjöldin: {top_expenses}
-    - Útgjöld eftir mánuðum: {monthly_expenses}
 
-    Spurning notanda: {user_question}
+    HÉR ERU ALLAR FÆRSLURNAR FRÁ BANKAYFIRLITINU:
+    ===========================================
 
-    Svaraðu stuttlega og skýrt á **vandaðri og málfræðilega réttri íslensku**, út frá gögnunum. Notaðu **NÁKVÆMLEGA** þær tölur sem eru í gögnunum hér fyrir ofan.
+    {all_transactions}
+
+    LEIÐBEININGAR:
+    =============
+    - Amount sem er neikvæð (< 0) er ÚTGJALD
+    - Amount sem er jákvæð (> 0) er TEKJUR
+    - Date er dagsetning í sniðinu YYYY-MM-DD
+    - Explanation er nafn viðtakanda/greiðanda
+
+    SPURNING FRÁ NOTANDA:
+    ======================
+    {user_question}
+
+    MIKILVÆGT:
+    - Greindu ALLAR færslurnar hér að ofan til að svara spurningunni
+    - Ef spurningin er um "10 dýrustu dagana", reiknaðu samtals útgjöld fyrir hvern dag og finna þá 10 dýrustu
+    - Ef spurningin er um "hversu oft", teldu færslurnar
+    - Ef spurningin er um "daga án útgjalda", teldu alla daga í tímabilinu og dragðu frá daga með útgjöldum
+    - Svaraðu NÁKVÆMLEGA út frá þessum gögnum
+    - Sýndu útreikninga þína ef það hjálpar
+    - Svaraðu á íslensku
+
+    Svaraðu nú!
     """
 
     try:
@@ -30,7 +63,12 @@ def chat_med_gemma(df, user_question: str):
                 "model": "gemma2:9b",
                 "prompt": prompt,
                 "stream": False,
-                "options": {"temperature": 0.3}
+                "options": {
+                    #latt fyrir calculation
+                    "temperature": 0.1,
+                    "num_ctx": 8192, 
+                    "num_predict": 1000 
+                }
             },
             #timeout 30 sec var alltof stutt...
             timeout=None
@@ -40,4 +78,5 @@ def chat_med_gemma(df, user_question: str):
         return result["response"]
         
     except Exception as e:
-        raise Exception(f"Gemma villa: {str(e)}")
+            raise Exception(f"Gemma villa: {str(e)}")
+
