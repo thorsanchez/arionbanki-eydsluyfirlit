@@ -23,19 +23,6 @@ def chat_med_gemma(df, user_question: str):
     Svaraðu stuttlega og skýrt á íslensku út frá gögnunum. Notaðu NÁKVÆMLEGA þær tölur sem eru í gögnunum hér fyrir ofan.
     """
 
-    # DEBUG: Prenta prompt til að sjá hvað var sent
-    print("\n" + "=" * 80)
-    print("DEBUG - Data sent to Gemma:")
-    print("=" * 80)
-    print(f"Total expenses: {total_expenses:.0f} kr")
-    print(f"\nTop 5 expenses:")
-    for exp in top_expenses:
-        print(f"  {exp}")
-    print(f"\nMonthly expenses:")
-    for month in monthly_expenses:
-        print(f"  {month}")
-    print("=" * 80 + "\n")
-
     try:
         response = requests.post(
             f"{GEMMA_HOST}/api/generate",

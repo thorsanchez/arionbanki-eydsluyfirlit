@@ -29,14 +29,14 @@ function Chat({ isEnabled }: ChatProps) {
       const response = await fetch("http://localhost:8000/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: chatInput })
+        body: JSON.stringify({ question: chatInput })
       });
 
       //json response frá backend
       const data = await response.json();
 
       // Bæta gemma svar við messages array
-      setMessages(prev => [...prev, { role: "assistant", content: data.response }]);
+      setMessages(prev => [...prev, { role: "assistant", content: data.answer }]);
     } catch {
       // Ef eitthvað fer úrskeiðis, sýna error
       setMessages(prev => [...prev, {

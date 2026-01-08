@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 import pandas as pd
 from io import BytesIO
 
@@ -11,6 +12,7 @@ from .analysis.utgjold import (
     manadar_utgjold,
 )
 from .gemma.flokka import flokka_med_gemma
+from .gemma.chat import chat_med_gemma
 
 app = FastAPI(title="Bankayfirlit API", version="1.0")
 
@@ -25,6 +27,10 @@ app.add_middleware(
 
 #store-a i memory
 current_df: pd.DataFrame | None = None
+
+# Request model fyrir chat
+class ChatRequest(BaseModel):
+    question: str
 
 @app.get("/")
 def root():
@@ -83,3 +89,20 @@ def get_top5_utgjold():
       # Breyta NaN gildi með egin (bakendi alltaf að crasha i þetta endpoint)
       top5 = top5.fillna('')
       return top5.to_dict('records')
+
+@app.post("/chat")
+def chat_endpoint(request: ChatRequest):
+    """
+    svarar spurningum um bankagögnin með Gemma
+    """
+    if current_df is None:
+        raise HTTPException(400, "engin skrá hefur verið hlaðið upp")
+
+    try:
+        answer = chat_med_gemma(current_df, request.question)
+        return {
+            "question": request.question,
+            "answer": answer
+        }
+    except Exception as e:
+        raise HTTPException(500, f"Villa í chat: {str(e)}")
