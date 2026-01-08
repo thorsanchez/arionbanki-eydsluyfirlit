@@ -12,7 +12,7 @@ def chat_med_gemma(df, user_question: str):
     monthly_expenses = manadar_utgjold(df).to_dict('records')
 
     prompt = f"""Þú ert fjármálaráðgjafi sem greinir bankaviðskipti á íslensku.
-
+    Hér eru öll viðskiptin: {df[['Date', 'Amount', 'Description']].to_json(orient='records', date_format='iso')}
     Notandi hefur hlaðið upp bankagögnum sínum. Hér er samantekt:
     - Heildarútgjöld: {total_expenses:.0f} kr
     - Stærstu útgjöldin: {top_expenses}
@@ -20,7 +20,7 @@ def chat_med_gemma(df, user_question: str):
 
     Spurning notanda: {user_question}
 
-    Svaraðu stuttlega og skýrt á íslensku út frá gögnunum. Notaðu NÁKVÆMLEGA þær tölur sem eru í gögnunum hér fyrir ofan.
+    Svaraðu stuttlega og skýrt á **vandaðri og málfræðilega réttri íslensku**, út frá gögnunum. Notaðu **NÁKVÆMLEGA** þær tölur sem eru í gögnunum hér fyrir ofan.
     """
 
     try:
@@ -33,7 +33,7 @@ def chat_med_gemma(df, user_question: str):
                 "options": {"temperature": 0.3}
             },
             #timeout 30 sec var alltof stutt...
-            timeout=200
+            timeout=None
         )
         
         result = response.json()

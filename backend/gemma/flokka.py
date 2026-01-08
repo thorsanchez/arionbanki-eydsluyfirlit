@@ -58,7 +58,7 @@ def flokka_med_gemma(df):
                     "temperature": 0.3
                 }
             },
-            timeout=120
+            timeout=700
         )
 
         response.raise_for_status()

@@ -4,9 +4,9 @@ _Verkefni í vinnslu_
 
 Einfaldt web app til að greina bankaútgjöld frá Arion banka.
 
-## Núverandi útlit
+## Núverandi staða
 
-![skjamynd](/public/Screenshot%202026-01-08%20at%2014.16.12.png)
+![skjamynd](/public/Screenshot%202026-01-08%20at%2016.54.31.png)
 (er að nota mock data til prófunar)
 
 ## Um verkefnið
