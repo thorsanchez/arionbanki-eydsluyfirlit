@@ -112,7 +112,7 @@ function App() {
 
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-      <h1>Hvað eypi ég?</h1>
+      <h1>Hvað eyði ég?</h1>
 
       <div style={{ marginBottom: "30px" }}>
         <h2>Hlaða upp xlsx</h2>
