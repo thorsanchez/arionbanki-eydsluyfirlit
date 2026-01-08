@@ -63,7 +63,6 @@ async def upload(file: UploadFile = File(...)):
         #almennar villur við lestur skráar
         raise HTTPException(500, f"error við lestur skráar: {str(e)}")
 
-# Dæmi um analysis endpoint
 @app.get("/analysis/utgjold-yfirlit")
 def get_utgjold_yfirlit():
     if current_df is None:
@@ -74,3 +73,13 @@ def get_utgjold_yfirlit():
         "total_utgjold": float(total),
         "formatted": f"{total:,.0f} kr."
     }
+
+@app.get("/analysis/top5-utgjold")
+def get_top5_utgjold():
+      if current_df is None:
+          raise HTTPException(400, "engin skrá hefur verið hlaðið upp")
+
+      top5 = top5_utgjold(current_df)
+      # Breyta NaN gildi með egin (bakendi alltaf að crasha i þetta endpoint)
+      top5 = top5.fillna('')
+      return top5.to_dict('records')

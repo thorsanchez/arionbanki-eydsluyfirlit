@@ -72,6 +72,39 @@ function App() {
     }
   };
 
+  const handleTop5Utgjold = async () => {
+    if (!uploadedData) return;
+
+    try {
+      //senda get request til bakenda
+      const response = await fetch(
+        "http://localhost:8000/analysis/top5-utgjold"
+      );
+
+      // athuga hvort það tókst
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+      }
+
+      // parse-a json response
+      const data = await response.json();
+      console.log("Top 5 útgjöld response:", data);
+
+      //Formata gogn
+      const formatted = data
+        .map(
+          (item: any, index: number) =>
+            `${index + 1}. ${item.Explanation}: ${item.Amount.toLocaleString()} kr`
+        )
+        .join("\n");
+
+      setResult(`Top 5 stærstu útgjöld:\n${formatted}`);
+    } catch (error) {
+      console.error("Analysis error:", error);
+      setResult(`Villa við greiningu: ${error}`);
+    }
+  };
+
   const handleAnalysis = (type: string) => {
     if (!uploadedData) return;
     setResult(`${type} - Bakendi API kemur bráðlega`);
@@ -99,10 +132,7 @@ function App() {
         <button onClick={handleUtgjoldYfirlit} disabled={!uploadedData}>
           Útgjöld yfirlit
         </button>
-        <button
-          onClick={() => handleAnalysis("Top 5 útgjöld")}
-          disabled={!uploadedData}
-        >
+        <button onClick={handleTop5Utgjold} disabled={!uploadedData}>
           Top 5 útgjöld
         </button>
         <button
