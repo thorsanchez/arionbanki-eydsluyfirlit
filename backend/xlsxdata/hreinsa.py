@@ -1,6 +1,10 @@
 import pandas as pd
 
 def hreinsa_gogn(df):
+    # halda bara i dalkana sem við þurfum
+    columns_to_keep = ['Date', 'Amount', 'Explanation']
+    df = df[columns_to_keep].copy()
+
     # breyta date texta i datetime object
     df['Date'] = pd.to_datetime(df['Date'])
     # amount yfir i number

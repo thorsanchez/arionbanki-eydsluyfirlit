@@ -1,5 +1,4 @@
 import requests
-import pandas as pd
 from ..utils.config import GEMMA_HOST
 
 def chat_med_gemma(df, user_question: str):
@@ -9,21 +8,23 @@ def chat_med_gemma(df, user_question: str):
     
     # geyma dataset
     df_copy = df.copy()
-    df_copy['Date'] = pd.to_datetime(df_copy['Date'])
-    
+
     # bara 2025 spurning inniheldur það
     if '2025' in user_question:
         df_filtered = df_copy[df_copy['Date'].dt.year == 2025].copy()
     else:
         df_filtered = df_copy.copy()
-    
-    # minka tokens bara 3 cols
-    relevant_cols = ['Date', 'Amount', 'Explanation']
-    df_filtered = df_filtered[relevant_cols].copy()
-    
+
+    # hraði test, bara fyrstu 20 línurnar
+    df_filtered = df_filtered.head(20)
+
+    # df hefur bara Date, Amount, Explanation (hreinsuð í hreinsa.py)
+
     df_filtered['Date'] = df_filtered['Date'].dt.strftime('%Y-%m-%d')
     df_filtered['Amount'] = df_filtered['Amount'].round(0).astype(int)
     all_transactions = df_filtered.to_dict('records')
+
+    print(f"hversu margar linur til gemma: {len(df_filtered)}")
     
     
     prompt = f"""Þú ert fjármálaráðgjafi sem greinir bankaviðskipti á íslensku.
