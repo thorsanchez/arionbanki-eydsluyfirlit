@@ -50,7 +50,7 @@ def flokka_med_gemma(df):
         response = requests.post(
             f"{GEMMA_HOST}/api/generate",
             json={
-                "model": "gemma2:9b",
+                "model": "llama3.1:8b",
                 "prompt": prompt,
                 "stream": False,
                 "format": "json",

@@ -61,7 +61,7 @@ def chat_med_gemma(df, user_question: str):
         response = requests.post(
             f"{GEMMA_HOST}/api/generate",
             json={
-                "model": "gemma2:9b",
+                "model": "llama3.1:8b",
                 "prompt": prompt,
                 "stream": False,
                 "options": {
