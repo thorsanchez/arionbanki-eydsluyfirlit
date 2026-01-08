@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import Chat from "./Chat";
 interface UploadedData {
   filename: string;
   rows?: number;
@@ -155,6 +155,8 @@ function App() {
         </button>
         {result && <p>{result}</p>}
       </div>
+      {/* /birta chat ef hlaðið upp, breytt i boolean */}
+      <Chat isEnabled={!!uploadedData}/>
     </div>
   );
 }
