@@ -90,6 +90,15 @@ def get_top5_utgjold():
       top5 = top5.fillna('')
       return top5.to_dict('records')
 
+@app.get("/analysis/top-vidtakendur")
+def get_top_vidtakendur():
+    if current_df is None:
+        raise HTTPException(400, "engin skrá hefur verið hlaðið upp")
+
+    top = top_vidtakendur(current_df, 5)
+    top = top.fillna('')
+    return top.to_dict('records')
+
 @app.post("/chat")
 def chat_endpoint(request: ChatRequest):
     """

@@ -105,6 +105,35 @@ function App() {
     }
   };
 
+  const handleTopVidtakendur = async () => {
+    if (!uploadedData) return;
+
+    try {
+      const response = await fetch(
+        "http://localhost:8000/analysis/top-vidtakendur"
+      );
+
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Top viðtakendur response:", data);
+
+      const formatted = data
+        .map(
+          (item: any, index: number) =>
+            `${index + 1}. ${item.Explanation}: ${item.Amount.toLocaleString()} kr (${item["Fjöldi færslna"]} færslur)`
+        )
+        .join("\n");
+
+      setResult(`Helstu viðtakendur:\n${formatted}`);
+    } catch (error) {
+      console.error("Analysis error:", error);
+      setResult(`Villa við greiningu: ${error}`);
+    }
+  };
+
   const handleAnalysis = (type: string) => {
     if (!uploadedData) return;
     setResult(`${type} - Bakendi API kemur bráðlega`);
@@ -136,7 +165,7 @@ function App() {
           Top 5 útgjöld
         </button>
         <button
-          onClick={() => handleAnalysis("Helstu viðtakendur")}
+          onClick={handleTopVidtakendur}
           disabled={!uploadedData}
         >
           Helstu viðtakendur
