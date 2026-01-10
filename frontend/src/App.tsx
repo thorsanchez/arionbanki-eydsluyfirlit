@@ -134,6 +134,35 @@ function App() {
     }
   };
 
+  const handleManadarUtgjold = async () => {
+    if (!uploadedData) return;
+
+    try {
+      const response = await fetch(
+        "http://localhost:8000/analysis/manadar-utgjold"
+      );
+
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Mánaðar útgjöld response:", data);
+
+      const formatted = data
+        .map(
+          (item: any) =>
+            `${item["Mánuður"]}: ${item.Amount.toLocaleString()} kr`
+        )
+        .join("\n");
+
+      setResult(`Mánaðarleg útgjöld:\n${formatted}`);
+    } catch (error) {
+      console.error("Analysis error:", error);
+      setResult(`Villa við greiningu: ${error}`);
+    }
+  };
+
   const handleAnalysis = (type: string) => {
     if (!uploadedData) return;
     setResult(`${type} - Bakendi API kemur bráðlega`);
@@ -171,7 +200,7 @@ function App() {
           Helstu viðtakendur
         </button>
         <button
-          onClick={() => handleAnalysis("Mánaðarleg útgjöld")}
+          onClick={handleManadarUtgjold}
           disabled={!uploadedData}
         >
           Mánaðarleg útgjöld

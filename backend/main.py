@@ -99,6 +99,15 @@ def get_top_vidtakendur():
     top = top.fillna('')
     return top.to_dict('records')
 
+@app.get("/analysis/manadar-utgjold")
+def get_manadar_utgjold():
+    if current_df is None:
+        raise HTTPException(400, "engin skrá hefur verið hlaðið upp")
+
+    manadar = manadar_utgjold(current_df)
+    manadar = manadar.fillna('')
+    return manadar.to_dict('records')
+
 @app.post("/chat")
 def chat_endpoint(request: ChatRequest):
     """
