@@ -205,12 +205,6 @@ function App() {
         >
           Mánaðarleg útgjöld
         </button>
-        <button
-          onClick={() => handleAnalysis("AI flokkun")}
-          disabled={!uploadedData}
-        >
-          Gemma flokkun
-        </button>
         {result && <p>{result}</p>}
       </div>
       {/* /birta chat ef hlaðið upp, breytt i boolean */}
